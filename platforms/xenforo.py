@@ -28,6 +28,15 @@ class Xenforo(AbstractPlatform):
         return self.xtoken
 
     def start_conversation(self, title: str, message: str, users: list) -> bool:
+        """
+        Initialize a new private message.
+
+        @param title: the conversation title.
+        @param message: the conversation contents.
+        @param users: a list of users to submit the message.
+
+        @returns true if the conversation is sucessfully started.
+        """
         url = '{}/conversations/insert'.format(self.base_url)
         users = ','.join(users)
 
@@ -35,6 +44,24 @@ class Xenforo(AbstractPlatform):
         response = self.session.post(url, params=params).json()
 
         return not 'error' in response and response['_redirectStatus'] == 'ok'
+
+
+    def post_thread(self, forum: str, title: str, contents: str) -> bool:
+        """
+        Post a new message to the correspondent forum.
+
+        @param forum: the forum id.
+        @param title: the topic title.
+        @param contents: the topic contents, the html message.
+
+        @returns true if the message is sucessfully submitted
+        """
+        url = '{}/forums/{}/add-thread'.format(self.base_url, forum)
+
+        params = self.include_params({'title': title, 'message_html': contents})
+        response = self.session.post(url, params=params).json()
+
+        return not 'error' in response
 
     def include_params(self, params:dict) -> dict:
         required = {'_xfToken': self.xtoken, '_xfResponseType': 'json'}
