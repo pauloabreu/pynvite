@@ -72,7 +72,7 @@ class Xenforo(AbstractPlatform):
 
         @param post_id: the post/thread id.
         @param message: the comment contents, the html message.
-
+        
         @returns true if the comment is sucessfully submitted.
         """
         url = '{}/threads/{}/add-reply'.format(self.base_url, post_id)
