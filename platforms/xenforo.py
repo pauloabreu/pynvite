@@ -66,13 +66,13 @@ class Xenforo(AbstractPlatform):
 
         return 'error' not in response
 
-    def post_comment(self, post_id: str, message: str) -> bool:
+    def post_comment(self, post_id: id, message: str) -> bool:
         """
         Post comment in a specific thread.
 
         @param post_id: the post/thread id.
         @param message: the comment contents, the html message.
-
+        
         @returns true if the comment is sucessfully submitted.
         """
         url = '{}/threads/{}/add-reply'.format(self.base_url, post_id)
@@ -93,6 +93,20 @@ class Xenforo(AbstractPlatform):
         url = '{}/profile-posts/comments/{}/like'.format(self.base_url, post_id)
 
         params = self.include_params({})
+        response = self.session.post(url, params=params).json()
+
+        return 'error' not in response
+    
+    def post_profile(self, profile_id: int, message: str ) -> bool:
+        url = '{}/members/{}/post'.format(self.base_url, profile_id)
+        params = self.include_params({'message':message})
+        response = self.session.post(url, params=params).json()
+    
+        return 'error' not in response
+    
+    def report_post(self, post_id: int, message: str ) -> bool:
+        url = '{}/posts/{}/report'.format(self.base_url, post_id)
+        params = self.include_params({'message':message})
         response = self.session.post(url, params=params).json()
 
         return 'error' not in response
