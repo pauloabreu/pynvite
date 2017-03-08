@@ -63,6 +63,15 @@ class Xenforo(AbstractPlatform):
 
         return not 'error' in response
 
+
+    def post_comment(self, forum:str, message:str ) -> bool:
+        url = '{}/threads/{}/add-reply'.format(self.base_url, forum)
+        params = self.include_params({'message_html': message})
+        response = self.session.post(url, params=params).json()
+
+        return not 'error' in response
+      
+
     def include_params(self, params:dict) -> dict:
         required = {'_xfToken': self.xtoken, '_xfResponseType': 'json'}
         return dict(chain(required.items(), params.items()))
