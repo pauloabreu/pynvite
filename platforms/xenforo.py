@@ -85,7 +85,7 @@ class Xenforo(AbstractPlatform):
         url = '{}/posts/{}/like'.format(self.base_url, post_id)
 
         params = self.include_params({})
-        response = self.session.post(url, params=params)
+        response = self.session.post(url, params=params).json()
 
         return 'error' not in response
 
@@ -93,9 +93,20 @@ class Xenforo(AbstractPlatform):
         url = '{}/profile-posts/comments/{}/like'.format(self.base_url, post_id)
 
         params = self.include_params({})
-        response = self.session.post(url, params=params)
+        response = self.session.post(url, params=params).json()
 
         return 'error' not in response
+
+    # def get_recente_activity_from_member(self, member_id):
+    #
+    #     url = '{}/members/{}/recent-content'.format(self.base_url, member_id)
+    #
+    #     params = self.include_params({})
+    #     response = self.session.post(url, params=params).json()
+    #
+    #     print(response)
+    #
+    #     return 'error' not in response
 
     def include_params(self, params:dict) -> dict:
         required = {'_xfToken': self.xtoken, '_xfResponseType': 'json'}
