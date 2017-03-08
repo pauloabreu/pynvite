@@ -14,3 +14,6 @@ class AbstractPlatform:
 
     def logout(self):
         self.session.close()
+
+    def list_active_users(self) -> dict:
+        pass
