@@ -81,6 +81,22 @@ class Xenforo(AbstractPlatform):
 
         return 'error' not in response
 
+    def like_post(self, post_id: int):
+        url = '{}/posts/{}/like'.format(self.base_url, post_id)
+
+        params = self.include_params({})
+        response = self.session.post(url, params=params)
+
+        return 'error' not in response
+
+    def like_profile_post(self, post_id: int):
+        url = '{}/profile-posts/comments/{}/like'.format(self.base_url, post_id)
+
+        params = self.include_params({})
+        response = self.session.post(url, params=params)
+
+        return 'error' not in response
+
     def include_params(self, params:dict) -> dict:
         required = {'_xfToken': self.xtoken, '_xfResponseType': 'json'}
         return dict(chain(required.items(), params.items()))
