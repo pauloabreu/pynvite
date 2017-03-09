@@ -66,7 +66,7 @@ class Xenforo(AbstractPlatform):
 
         return 'error' not in response
 
-    def post_comment(self, post_id: id, message: str) -> bool:
+    def post_comment(self, post_id: int, message: str) -> bool:
         """
         Post comment in a specific thread.
 
