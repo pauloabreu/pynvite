@@ -62,9 +62,7 @@ class Xenforo(AbstractPlatform):
         url = '{}/forums/{}/add-thread'.format(self.base_url, forum_id)
 
         params = self.include_params({'title': title, 'message_html': contents})
-        response = self.session.post(url, params=params).json()
-
-        return 'error' not in response
+        return 'error' not in self.session.post(url, params=params).json()
 
     def post_comment(self, post_id: int, message: str) -> bool:
         """
@@ -76,40 +74,33 @@ class Xenforo(AbstractPlatform):
         @returns true if the comment is sucessfully submitted.
         """
         url = '{}/threads/{}/add-reply'.format(self.base_url, post_id)
+        
         params = self.include_params({'message_html': message})
-        response = self.session.post(url, params=params).json()
-
-        return 'error' not in response
+        return 'error' not in self.session.post(url, params=params).json()
 
     def like_post(self, post_id: int):
         url = '{}/posts/{}/like'.format(self.base_url, post_id)
 
         params = self.include_params({})
-        response = self.session.post(url, params=params).json()
-
-        return 'error' not in response
+        return 'error' not in self.session.post(url, params=params).json()
 
     def like_profile_post(self, post_id: int):
         url = '{}/profile-posts/comments/{}/like'.format(self.base_url, post_id)
 
         params = self.include_params({})
-        response = self.session.post(url, params=params).json()
-
-        return 'error' not in response
+        return 'error' not in self.session.post(url, params=params).json()
     
     def post_profile(self, profile_id: int, message: str ) -> bool:
         url = '{}/members/{}/post'.format(self.base_url, profile_id)
+        
         params = self.include_params({'message':message})
-        response = self.session.post(url, params=params).json()
-    
-        return 'error' not in response
+        return 'error' not in self.session.post(url, params=params).json()
     
     def report_post(self, post_id: int, message: str ) -> bool:
         url = '{}/posts/{}/report'.format(self.base_url, post_id)
+        
         params = self.include_params({'message':message})
-        response = self.session.post(url, params=params).json()
-
-        return 'error' not in response
+        return 'error' not in self.session.post(url, params=params).json()
 
     # def get_recente_activity_from_member(self, member_id):
     #
