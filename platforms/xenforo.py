@@ -102,6 +102,18 @@ class Xenforo(AbstractPlatform):
         params = self.include_params({'message':message})
         return 'error' not in self.session.post(url, params=params).json()
 
+    def follow_profile(self, profile_id: int) -> bool:
+        url = '{}/members/{}/follow'.format(self.base_url, profile_id)
+
+        params = self.include_params({'_xfConfirm': 1}) 
+        return 'error' not in self.session.post(url, params=params).json()
+
+    def unfollow_profile(self, profile_id: int) -> bool:
+        url = '{}/members/{}/unfollow'.format(self.base_url, profile_id)
+
+        params = self.include_params({'_xfConfirm': 1})
+        return 'error' not in self.session.post(url, params=params).json()
+
     # def get_recente_activity_from_member(self, member_id):
     #
     #     url = '{}/members/{}/recent-content'.format(self.base_url, member_id)
