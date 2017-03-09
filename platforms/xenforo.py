@@ -22,7 +22,9 @@ class Xenforo(AbstractPlatform):
             if not self.xtoken:
                 raise Exception('Fail to get/find the "xtoken" value.')
 
-        return True
+            return True
+
+        raise Exception('Fail to login, response code != 200: {}.'.format(response.status_code))
 
     def get_token(self) -> str:
         """
