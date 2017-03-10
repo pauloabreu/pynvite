@@ -162,29 +162,29 @@ class Xenforo(AbstractPlatform):
         params = self.include_params({'_xfConfirm': 1})
         return 'error' not in self.session.post(url, params=params).json()
 
-    # def get_posts(self, member_id: int) -> list:
-    #
-    #     post_list = []
-    #     url = '{}/search/member?user_id={}'.format(self.base_url, member_id)
-    #
-    #     search_base = self.session.get(url).url
-    #     page_index = 1
-    #
-    #     while True:
-    #         url = '{}?page={}'.format(search_base, page_index)
-    #         page_index += 1
-    #
-    #         bs = bsoup(self.session.get(url).content, 'html.parser')
-    #         posting = bs.find('ol', attrs={'class': 'searchResultsList'})
-    #
-    #         if not posting:
-    #             break
-    #
-    #         items = bs.select('.title a')
-    #         if items:
-    #             post_list.extend(parse_member_posting(items))
-    #
-    #     return post_list
+    def get_posts(self, member_id: int) -> list:
+
+        post_list = []
+        url = '{}/search/member?user_id={}'.format(self.base_url, member_id)
+
+        search_base = self.session.get(url).url
+        page_index = 1
+
+        while True:
+            url = '{}?page={}'.format(search_base, page_index)
+            page_index += 1
+
+            bs = bsoup(self.session.get(url).content, 'html.parser')
+            posting = bs.find('ol', attrs={'class': 'searchResultsList'})
+
+            if not posting:
+                break
+
+            items = bs.select('.title a')
+            if items:
+                post_list.extend(parse_member_posting(items))
+
+        return post_list
 
 
     def include_params(self, params:dict) -> dict:
