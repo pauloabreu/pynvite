@@ -2,12 +2,15 @@
 from itertools import chain
 from bs4 import BeautifulSoup as bsoup
 from platforms.abstract_platform import AbstractPlatform
+from platforms.xf.xfhelper import parse_member_posting
 
 
 class Xenforo(AbstractPlatform):
 
+
     def __init__(self, base_url):
         super(Xenforo, self).__init__('Xenforo', base_url)
+
 
     def login(self, user: str, password: str) -> bool:
         login_url = '{}/login/login'.format(self.base_url)
@@ -26,12 +29,14 @@ class Xenforo(AbstractPlatform):
 
         raise Exception('Fail to login, response code != 200: {}.'.format(response.status_code))
 
+
     def get_token(self) -> str:
         """
         Get the value from Xenforo "xtoken".
         @returns the xtoken value.
         """
         return self.xtoken
+
 
     def start_conversation(self, title: str, message: str, users: list) -> bool:
         """
@@ -51,6 +56,7 @@ class Xenforo(AbstractPlatform):
 
         return 'error' not in response and response['_redirectStatus'] == 'ok'
 
+
     def post_thread(self, forum_id: int, title: str, contents: str) -> bool:
         """
         Post a new message to the correspondent forum.
@@ -66,6 +72,7 @@ class Xenforo(AbstractPlatform):
         params = self.include_params({'title': title, 'message_html': contents})
         return 'error' not in self.session.post(url, params=params).json()
 
+
     def post_comment(self, post_id: int, message: str) -> bool:
         """
         Post comment in a specific thread.
@@ -80,24 +87,63 @@ class Xenforo(AbstractPlatform):
         params = self.include_params({'message_html': message})
         return 'error' not in self.session.post(url, params=params).json()
 
-    def like_post(self, post_id: int):
+
+    def like_post(self, post_id: int) -> bool:
+        """
+        Like a post, thread or comment.
+
+        @param post_id: the post ID.
+
+        @returns true if the post is sucessfully liked.
+        """
         url = '{}/posts/{}/like'.format(self.base_url, post_id)
 
         params = self.include_params({})
         return 'error' not in self.session.post(url, params=params).json()
 
-    def like_profile_post(self, post_id: int):
-        url = '{}/profile-posts/comments/{}/like'.format(self.base_url, post_id)
+
+    def like_profile_post_comment(self, comment_id: int) -> bool:
+        """
+        Like a comment on a profile post.
+
+        @param comment_id: the post ID.
+
+        @returns true if the comment is sucessfully liked.
+        """
+        url = '{}/profile-posts/comments/{}/like'.format(self.base_url, comment_id)
 
         params = self.include_params({})
         return 'error' not in self.session.post(url, params=params).json()
-    
+
+    def like_profile_post(self, post_id: int) -> bool:
+        """
+        Like a profile post.
+
+        @param post_id: the post ID.
+
+        @returns true if the post is sucessfully liked.
+        """
+        url = '{}/profile-posts/{}/like'.format(self.base_url, post_id)
+
+        params = self.include_params({})
+        return 'error' not in self.session.post(url, params=params).json()
+
+
     def post_profile(self, profile_id: int, message: str ) -> bool:
+        """
+        Post a message on member profile.
+
+        @param profile_id: the member ID.
+        @param message: the message to post.
+
+        @returns true if the message is sucessfully posted.
+        """
         url = '{}/members/{}/post'.format(self.base_url, profile_id)
         
         params = self.include_params({'message':message})
         return 'error' not in self.session.post(url, params=params).json()
-    
+
+
     def report_post(self, post_id: int, message: str ) -> bool:
         url = '{}/posts/{}/report'.format(self.base_url, post_id)
         
@@ -116,16 +162,30 @@ class Xenforo(AbstractPlatform):
         params = self.include_params({'_xfConfirm': 1})
         return 'error' not in self.session.post(url, params=params).json()
 
-    # def get_recente_activity_from_member(self, member_id):
+    # def get_posts(self, member_id: int) -> list:
     #
-    #     url = '{}/members/{}/recent-content'.format(self.base_url, member_id)
+    #     post_list = []
+    #     url = '{}/search/member?user_id={}'.format(self.base_url, member_id)
     #
-    #     params = self.include_params({})
-    #     response = self.session.post(url, params=params).json()
+    #     search_base = self.session.get(url).url
+    #     page_index = 1
     #
-    #     print(response)
+    #     while True:
+    #         url = '{}?page={}'.format(search_base, page_index)
+    #         page_index += 1
     #
-    #     return 'error' not in response
+    #         bs = bsoup(self.session.get(url).content, 'html.parser')
+    #         posting = bs.find('ol', attrs={'class': 'searchResultsList'})
+    #
+    #         if not posting:
+    #             break
+    #
+    #         items = bs.select('.title a')
+    #         if items:
+    #             post_list.extend(parse_member_posting(items))
+    #
+    #     return post_list
+
 
     def include_params(self, params:dict) -> dict:
         required = {'_xfToken': self.xtoken, '_xfResponseType': 'json'}
